@@ -1,0 +1,5 @@
+# Ignore the README.md file
+README.md
+
+# Ignore the .env file
+.env
