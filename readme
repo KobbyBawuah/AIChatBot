@@ -1,4 +1,7 @@
-This app is a basic command-line chatbot that can answer questions based on a pre-trained language model about custom data. Here's a breakdown of its functionalities:
+This app is a basic command-line chatbot that can answer questions based on a pre-trained language model about custom data. Given that the current implimentation is only send the standalone questions to vector store as oposed to the LLM model, it specializes in the custom data provided and no general knowledge on the internet.
+
+
+Here's a breakdown of its functionalities:
 
 ###Summary
 This app uses the OpenAI language model to respond to user input. It loads text data, creates an index, and then continuously interacts with the user, providing responses based on the provided chat history and the user's questions. Additionally, it incorporates a basic moderation check to ensure that inappropriate or harmful content is not processed by the model.

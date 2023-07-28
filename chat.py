@@ -73,14 +73,15 @@ def get_response(index, previous_questions_and_answers, new_question):
   messages += "Human: " + new_question
   messages += "AI: " 
 
-  print("Message to send: ------->",messages)
+  # print("Message to send: ------->",messages)
 
-  print("New question posed: ------->",new_question)
+  # print("New question posed: ------->",new_question)
 
 #If you want to use outside data in conjuction with the internal data, pass in a language model like this
 #print(index.query(query,llm=ChatOpenAI()))
+#Current implimentation should only send the standalone question to vector store as oposed to the LLM model. 
   result = index.query(messages)
-  print("Response: -------->",result)
+  # print("Response: -------->",result)
 
   return result
 
@@ -92,11 +93,11 @@ def main():
 
   #Text loader
   loader = TextLoader('constitution.txt')
-  print ("rahh 1")
+  # print ("rahh 1")
 
   # loader = DirectoryLoader(".", glob="*.txt")
   index = VectorstoreIndexCreator().from_loaders([loader])
-  print ("rahh 2")
+  # print ("rahh 2")
 
   while True:
     # ask the user for their question
