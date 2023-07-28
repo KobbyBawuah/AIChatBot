@@ -34,3 +34,30 @@ control+C
 deactivate
 
 ```
+
+
+
+
+In order to run the GUI version of this app:
+
+###Instrunctions
+```
+Create a .env file folowing the .envsample and insert your API key
+
+python3 -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.txt
+
+To run: 
+streamlit run GUI.py
+
+```
+
+Attach a text or PDF document and ask away 
+
+```
+control+C
+
+deactivate
+
+```
