@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import openai
 from colorama import Fore, Back, Style
 import sentry_sdk
+import streamlit as st
 
 sentry_sdk.init(
   dsn="https://5a87e033b27340fe82b9c0a6a0eb93fc@o1145044.ingest.sentry.io/4505588043284480",
@@ -80,7 +81,8 @@ def get_response(index, previous_questions_and_answers, new_question):
 #If you want to use outside data in conjuction with the internal data, pass in a language model like this
 #print(index.query(query,llm=ChatOpenAI()))
 #Current implimentation should only send the standalone question to vector store as oposed to the LLM model. 
-  result = index.query(messages)
+  # result = index.query(messages)
+  result = "Demo data"
   # print("Response: -------->",result)
 
   return result
