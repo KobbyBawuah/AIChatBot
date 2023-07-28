@@ -3,3 +3,5 @@ README.md
 
 # Ignore the .env file
 .env
+
+venv/
