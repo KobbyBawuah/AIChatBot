@@ -1,9 +1,10 @@
 This app is a basic command-line chatbot that can answer questions based on a pre-trained language model about custom data. Here's a breakdown of its functionalities:
 
-###Instructions
+###Summary
 This app uses the OpenAI language model to respond to user input. It loads text data, creates an index, and then continuously interacts with the user, providing responses based on the provided chat history and the user's questions. Additionally, it incorporates a basic moderation check to ensure that inappropriate or harmful content is not processed by the model.
 
 ###Instrunctions
+```
 Create a .env file folowing the .envsample and insert your API key
 
 python3 -m venv venv
@@ -13,8 +14,9 @@ pip install -r requirements.txt
 To run: 
 python3.11 chat.py
 
+```
 
-Sample questions based on custom data:
+Sample questions based on custom data ---> expected anwers based on questions:
 - Who is the creator of this chat bot? --->>> Should say Kwabena
 - Gf? --->> Kemi
 - Who is his father? --> Information not provided in data
@@ -23,6 +25,9 @@ Sample questions based on custom data:
 - what did the people of the united states do in Order to form a more perfect Union? -->This is just a general question to ensure functionallity 
 - Summarize the constitution? --> General question as well to ensure functionality
 
+```
 control+C
 
 deactivate
+
+```
