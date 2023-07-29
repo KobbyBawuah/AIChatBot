@@ -60,43 +60,37 @@ def get_moderation(question):
   return None
 
 def get_response(index, previous_questions_and_answers, new_question):
-  
-  """Get a response after querrying the created vector after the question is absorbed
+    
+    """Get a response after querrying the created vector after the question is absorbed
 
-  Args:
+    Args:
     index: creates an index using the VectorstoreIndexCreator class, initialized with text data loaded from a document loader
     previous_questions_and_answers: Chat history
     new_question: The new question to ask the bot
 
-  Returns:
+    Returns:
     The response text
-  """
-  #Consider limiting the previous question limit to the last 10. 
+    """
+    #Consider limiting the previous question limit to the last 10. 
 
-  messages = ""
-  messages += previous_questions_and_answers
-  messages += "Human: " + new_question
-  messages += "AI: " 
+    messages = ""
+    messages += previous_questions_and_answers
+    messages += "Human: " + new_question
+    messages += "AI: " 
 
-  # print("Message to send: ------->",messages)
+    #If you want to use outside data in conjuction with the internal data, pass in a language model like this
+    #print(index.query(query,llm=ChatOpenAI()))
+    #Current implimentation should only send the standalone question to vector store as oposed to the LLM model. 
+    result = index.query(messages)
 
-  # print("New question posed: ------->",new_question)
-
-#If you want to use outside data in conjuction with the internal data, pass in a language model like this
-#print(index.query(query,llm=ChatOpenAI()))
-#Current implimentation should only send the standalone question to vector store as oposed to the LLM model. 
-  result = index.query(messages)
-#   result = "Demo data"
-  # print("Response: -------->",result)
-
-  return result
+    return result
 
 
 def write_text_to_file(file_name, text_to_write):
     try:
-        # Step 1: Open/create the file in write mode
+        # create the file in write mode
         with open(file_name, 'w') as file:
-            # Step 2: Write the desired text into the file
+            # write the desired text into the file
             file.write(text_to_write)
         print("Text has been successfully written to the file.")
     except Exception as e:
@@ -107,7 +101,7 @@ def question_and_answer_generation(index, previous_questions_and_answers):
     if user_question:
         errors = get_moderation(user_question)
         if errors:
-            st.write("Sorry, you're question didn't pass the moderation check:")
+            st.write("Sorry, your question didn't pass the moderation check:")
             for error in errors:
                 st.write(error)
                 st.write(Style.RESET_ALL)
@@ -126,16 +120,14 @@ def create_index(name):
 
 
 def main():
-  #UI
+    #UI
     st.set_page_config(page_title="Ask your File")
     st.header("Ask your PDF or Text file 💬")
 
     file_type = ["pdf", "txt"]
     text_content = ""
     previous_questions_and_answers = ""
-    file_uploaded = False
     index = None
-
 
     #upload the file
     uploaded_file = st.file_uploader("Upload your PDF or Text file", type=file_type)
@@ -144,8 +136,6 @@ def main():
         file_extension = uploaded_file.name.split(".")[-1]
         if file_extension.lower() == "pdf":
             # Handle PDF file
-            st.write("You uploaded a PDF file!")
-
             # Process the PDF file 
             pdf_reader = PdfReader(uploaded_file)
             for page in pdf_reader.pages:
@@ -181,22 +171,18 @@ def main():
             # knoweldge_base = FAISS.from_texts(chunks,embeddings)
 
             ## then query the knowledge base with any language model on something like docs = knoweldge_base.similarity_search(user_question)
-
-            st.write("-------->>>>>>>>>PDF vector created!!!")
             
             question_and_answer_generation(index, previous_questions_and_answers)
 
         elif file_extension.lower() == "txt":
             # Handle text file
-            st.write("You uploaded a text file.")
             # Process the text file 
-            text_content = uploaded_file.getvalue().decode("utf-8")
+            # text_content = uploaded_file.getvalue().decode("utf-8")
             # st.write(text_content)
 
             #create index
             index = create_index(uploaded_file.name)
 
-            st.write("-------->>>>>>>>>Text vector created!!!")
             question_and_answer_generation(index, previous_questions_and_answers)
             
         else:
