@@ -88,6 +88,17 @@ def get_response(index, previous_questions_and_answers, new_question):
 
   return result
 
+
+def write_text_to_file(file_name, text_to_write):
+    try:
+        # Step 1: Open/create the file in write mode
+        with open(file_name, 'w') as file:
+            # Step 2: Write the desired text into the file
+            file.write(text_to_write)
+        print("Text has been successfully written to the file.")
+    except Exception as e:
+        print(f"Error: {e}")
+
 def main():
   #UI
     st.set_page_config(page_title="Ask your File")
@@ -104,11 +115,20 @@ def main():
         if file_extension.lower() == "pdf":
             # Handle PDF file
             st.write("You uploaded a PDF file!")
+
             # Process the PDF file 
             pdf_reader = PdfReader(uploaded_file)
             for page in pdf_reader.pages:
                 text_content += page.extract_text()
             st.write(text_content)
+            #Change to text file
+            write_text_to_file(uploaded_file.name, text_content)
+            
+            #create index
+            text_loader = TextLoader(uploaded_file.name)
+            index = VectorstoreIndexCreator().from_loaders([text_loader])
+
+            st.write("-------->>>>>>>>>PDF vector created!!!")
 
         elif file_extension.lower() == "txt":
             # Handle text file
@@ -117,27 +137,16 @@ def main():
             text_content = uploaded_file.getvalue().decode("utf-8")
             st.write(text_content)
 
+            #create index
+            text_loader = TextLoader(uploaded_file.name)
+
+            index = VectorstoreIndexCreator().from_loaders([text_loader])
+            st.write("-------->>>>>>>>>Text vector created!!!")
         else:
             st.error("Unsupported file type! Please upload a PDF or text file.")
 
     previous_questions_and_answers = ""
-
-    # #Text loader
-    # loader = TextLoader('constitution.txt')
-    # # print ("rahh 1")
-
-    # # loader = DirectoryLoader(".", glob="*.txt")
     
-    
-    
-    # index = VectorstoreIndexCreator().from_loaders([text_content])
-    # st.write("vector created!!!")
-
-    # while True:
-    #     # ask the user for their question
-    #     new_question = input(
-    #         Fore.GREEN + Style.BRIGHT + "How can I help you?: " + Style.RESET_ALL
-    #     )
     #     # check the question is safe
     #     errors = get_moderation(new_question)
     #     if errors:
