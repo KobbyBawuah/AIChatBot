@@ -56,3 +56,6 @@ If you prefer an Interface/GUI version of the chatbot, follow these instructions
 Attach a text or PDF document and ask questions related to its content.
 
 To exit the GUI chatbot, close the chat bot in your browser, press `Ctrl + C` in your terminal, and then deactivate the virtual environment using the `deactivate` command.
+
+Example of Interface:
+![Example image of interface](interface.png)
