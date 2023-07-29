@@ -8,6 +8,9 @@ from colorama import Fore, Back, Style
 import sentry_sdk
 import streamlit as st
 from PyPDF2 import PdfReader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings 
+from langchain.vectorstores import FAISS
 
 sentry_sdk.init(
   dsn="https://5a87e033b27340fe82b9c0a6a0eb93fc@o1145044.ingest.sentry.io/4505588043284480",
@@ -82,8 +85,8 @@ def get_response(index, previous_questions_and_answers, new_question):
 #If you want to use outside data in conjuction with the internal data, pass in a language model like this
 #print(index.query(query,llm=ChatOpenAI()))
 #Current implimentation should only send the standalone question to vector store as oposed to the LLM model. 
-  # result = index.query(messages)
-  result = "Demo data"
+  result = index.query(messages)
+#   result = "Demo data"
   # print("Response: -------->",result)
 
   return result
@@ -106,6 +109,10 @@ def main():
 
     file_type = ["pdf", "txt"]
     text_content = ""
+    previous_questions_and_answers = ""
+    file_uploaded = False
+    index = None
+
 
     #upload the file
     uploaded_file = st.file_uploader("Upload your PDF or Text", type=file_type)
@@ -120,7 +127,8 @@ def main():
             pdf_reader = PdfReader(uploaded_file)
             for page in pdf_reader.pages:
                 text_content += page.extract_text()
-            st.write(text_content)
+
+            #Implementation for the VectorstoreIndexCreator() way
             #Change to text file
             write_text_to_file(uploaded_file.name, text_content)
             
@@ -128,44 +136,63 @@ def main():
             text_loader = TextLoader(uploaded_file.name)
             index = VectorstoreIndexCreator().from_loaders([text_loader])
 
+            os.remove(uploaded_file.name)
+            print("File has been successfully deleted.")
+
+            # #Alternative to simply calling VectorstoreIndexCreator() below
+
+            # #split into chuncks 
+            # text_splitter = CharacterTextSplitter(
+            #     separator="\n",
+            #     chunk_size=1000,
+            #     chunk_overlap=200,
+            #     length_function=len
+            # )
+
+            # chunks = text_splitter.split_text(text_content)
+
+            # st.write(chunks)
+
+            # #create embeddings
+            # embeddings = OpenAIEmbeddings()
+            # knoweldge_base = FAISS.from_texts(chunks,embeddings)
+
+            ## then of course query the knowledge base.
+
             st.write("-------->>>>>>>>>PDF vector created!!!")
+            file_uploaded = True
 
         elif file_extension.lower() == "txt":
             # Handle text file
             st.write("You uploaded a text file.")
             # Process the text file 
             text_content = uploaded_file.getvalue().decode("utf-8")
-            st.write(text_content)
+            # st.write(text_content)
 
             #create index
             text_loader = TextLoader(uploaded_file.name)
 
             index = VectorstoreIndexCreator().from_loaders([text_loader])
             st.write("-------->>>>>>>>>Text vector created!!!")
+            file_uploaded = True
         else:
             st.error("Unsupported file type! Please upload a PDF or text file.")
 
-    previous_questions_and_answers = ""
-    
-    #     # check the question is safe
-    #     errors = get_moderation(new_question)
-    #     if errors:
-    #             print(
-    #                 Fore.RED
-    #                 + Style.BRIGHT
-    #                 + "Sorry, you're question didn't pass the moderation check:"
-    #             )
-    #             for error in errors:
-    #                 print(error)
-    #             print(Style.RESET_ALL)
-    #             continue
-        
-    #     response = get_response(index, previous_questions_and_answers, new_question)
+    if file_uploaded == True:
+        user_question = st.text_input("Ask a question about your document:")
+        if user_question:
+            errors = get_moderation(user_question)
+            if errors:
+                st.write("Sorry, you're question didn't pass the moderation check:")
+                for error in errors:
+                    st.write(error)
+                    st.write(Style.RESET_ALL)
 
-    #     previous_questions_and_answers+="Human: " + new_question + " " + "AI: " + response + " "
+            response = get_response(index, previous_questions_and_answers, user_question)
 
-    #     # print the response
-    #     print(Fore.CYAN + Style.BRIGHT + "Here you go: " + Style.NORMAL + response)
+            previous_questions_and_answers+="Human: " + user_question + " " + "AI: " + response + " "
+
+            st.write(response)
 
 if __name__ == "__main__":
     main()
