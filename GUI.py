@@ -8,9 +8,9 @@ from colorama import Fore, Back, Style
 import sentry_sdk
 import streamlit as st
 from PyPDF2 import PdfReader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings 
-from langchain.vectorstores import FAISS
+# from langchain.text_splitter import CharacterTextSplitter
+# from langchain.embeddings.openai import OpenAIEmbeddings 
+# from langchain.vectorstores import FAISS
 
 sentry_sdk.init(
   dsn="https://5a87e033b27340fe82b9c0a6a0eb93fc@o1145044.ingest.sentry.io/4505588043284480",
@@ -102,6 +102,29 @@ def write_text_to_file(file_name, text_to_write):
     except Exception as e:
         print(f"Error: {e}")
 
+def question_and_answer_generation(index, previous_questions_and_answers):
+    user_question = st.text_input("Ask a question about your document:")
+    if user_question:
+        errors = get_moderation(user_question)
+        if errors:
+            st.write("Sorry, you're question didn't pass the moderation check:")
+            for error in errors:
+                st.write(error)
+                st.write(Style.RESET_ALL)
+
+        response = get_response(index, previous_questions_and_answers, user_question)
+
+        previous_questions_and_answers += "Human: " + user_question + " " + "AI: " + response + " "
+
+        st.write(response)
+
+def create_index(name):
+    text_loader = TextLoader(name)
+    index = VectorstoreIndexCreator().from_loaders([text_loader])
+
+    return index
+
+
 def main():
   #UI
     st.set_page_config(page_title="Ask your File")
@@ -115,7 +138,7 @@ def main():
 
 
     #upload the file
-    uploaded_file = st.file_uploader("Upload your PDF or Text", type=file_type)
+    uploaded_file = st.file_uploader("Upload your PDF or Text file", type=file_type)
 
     if uploaded_file is not None:
         file_extension = uploaded_file.name.split(".")[-1]
@@ -129,12 +152,12 @@ def main():
                 text_content += page.extract_text()
 
             #Implementation for the VectorstoreIndexCreator() way
-            #Change to text file
-            write_text_to_file(uploaded_file.name, text_content)
             
+            #Change to text file
+            write_text_to_file(uploaded_file.name, text_content)           
+
             #create index
-            text_loader = TextLoader(uploaded_file.name)
-            index = VectorstoreIndexCreator().from_loaders([text_loader])
+            index = create_index(uploaded_file.name)
 
             os.remove(uploaded_file.name)
             print("File has been successfully deleted.")
@@ -157,10 +180,11 @@ def main():
             # embeddings = OpenAIEmbeddings()
             # knoweldge_base = FAISS.from_texts(chunks,embeddings)
 
-            ## then of course query the knowledge base.
+            ## then query the knowledge base with any language model on something like docs = knoweldge_base.similarity_search(user_question)
 
             st.write("-------->>>>>>>>>PDF vector created!!!")
-            file_uploaded = True
+            
+            question_and_answer_generation(index, previous_questions_and_answers)
 
         elif file_extension.lower() == "txt":
             # Handle text file
@@ -170,29 +194,13 @@ def main():
             # st.write(text_content)
 
             #create index
-            text_loader = TextLoader(uploaded_file.name)
+            index = create_index(uploaded_file.name)
 
-            index = VectorstoreIndexCreator().from_loaders([text_loader])
             st.write("-------->>>>>>>>>Text vector created!!!")
-            file_uploaded = True
+            question_and_answer_generation(index, previous_questions_and_answers)
+            
         else:
             st.error("Unsupported file type! Please upload a PDF or text file.")
-
-    if file_uploaded == True:
-        user_question = st.text_input("Ask a question about your document:")
-        if user_question:
-            errors = get_moderation(user_question)
-            if errors:
-                st.write("Sorry, you're question didn't pass the moderation check:")
-                for error in errors:
-                    st.write(error)
-                    st.write(Style.RESET_ALL)
-
-            response = get_response(index, previous_questions_and_answers, user_question)
-
-            previous_questions_and_answers+="Human: " + user_question + " " + "AI: " + response + " "
-
-            st.write(response)
 
 if __name__ == "__main__":
     main()
