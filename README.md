@@ -22,11 +22,9 @@ Follow these steps to run the command-line version of the chatbot:
 2. Set up a Python virtual environment and install dependencies using the following commands:
 
 ```
-
 python3 -m venv venv
 . ./venv/bin/activate
 pip install -r requirements.txt
-
 ```
 
 3. To start the chatbot, execute the following command:
@@ -50,9 +48,11 @@ If you prefer an Interface/GUI version of the chatbot, follow these instructions
 
 1. Create a .env file following the structure of .envsample and insert your API key.
 2. Set up a Python virtual environment and install dependencies using the following commands:
-`python3 -m venv venv`
-`. ./venv/bin/activate`
-`pip install -r requirements.txt`
+```
+python3 -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.txt
+```
 
 3. To start the GUI chatbot, execute the following command:
 `streamlit run GUI.py`
