@@ -1,5 +1,5 @@
 ### Custom ChatBot
-This project presents a basic chatbot designed to answer user questions using a pre-trained language model. The chatbot specializes in responding to questions based on custom data rather than providing general knowledge from the internet. It achieves this by sending standalone questions to a vector store instead of the more extensive language model.
+This project presents an AI chatbot designed to answer user questions using a pre-trained language model. The chatbot specializes in responding to questions based on custom data rather than providing general knowledge from the internet. It achieves this by sending standalone questions to a vector store instead of the more extensive language model.
 
 ### Functionality Overview
 
