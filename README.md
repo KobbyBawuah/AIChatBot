@@ -63,3 +63,7 @@ To exit the GUI chatbot, close the chat bot in your browser, press `Ctrl + C` in
 
 Example of Interface:
 ![Example image of interface](interface.png)
+
+Example documents provided:
+constitution.txt
+constitution.pdf
