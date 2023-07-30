@@ -65,5 +65,4 @@ Example of Interface:
 ![Example image of interface](interface.png)
 
 Example documents provided:
-constitution.txt
-constitution.pdf
+`constitution.txt` custom sample of the costitution and `constitution.pdf` is a raw sample of the constitution. 
